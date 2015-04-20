@@ -49,5 +49,6 @@ Client:
   ```
   change the ip of your server in bin/index.html, such as "115.29.205.140"
   ```
+  * put bin/* under a web server(such as nginx).
   
-  * open multiply browser tab for `bin/index.html`
+  * visit `bin/index.html` in your browser

@@ -9,3 +9,13 @@ Normally, for hls protocal, client download m3u8 first, then download ts; In our
 server first, then download ts and m3u8 from server or other peers.
 
 We developed a algorithm for LIVE hls P2P.
+
+The algorithm is like this:
+* for a single ts file, if we download it from peer, we download it from more than one peer
+* we establish a p2p topology at first.
+* data is pushed from one peer to others
+* if one peer exits, downstream will know that after a while, and will PING the exited peer, 
+  if PING fails, it will retry to establising a new topology. In the process of rebuilding the
+  new topology, data will be downloaded from server.
+* peer is considered as stable if it can be added to other peer's topology.
+* m3u8 is small, it will be downloaded only from one peer.

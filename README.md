@@ -43,6 +43,8 @@ Server:
     note: Lava Media Server 4 is not a open source project now.
 
 Client:
+  * Build the binary. Note: because we use osmf source code directly, you need to remove default osmf lib in you computer
+    before building it.
   * Change config in bin/index.html
   ```
   change the ip of your server in bin/index.html, such as "115.29.205.140"

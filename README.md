@@ -39,7 +39,8 @@ Server:
   * start redis
   * copy "cumulus/main.lua" to "Cumulus/CumulusServer/www" and start CumulusServer
   * copy "server/remote_log" to any folder, under remote_log, run `npm install`, then `node index.js`
-  * you also need a media server to stream HLS.
+  * you also need a media server to stream HLS(such as FMS, Wowza, or Lava Media Server 4(trochilus) if you interested).
+    note: Lava Media Server 4 is not a open source project now.
 
 Client:
   * Change config in bin/index.html

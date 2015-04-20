@@ -19,3 +19,9 @@ The algorithm is like this:
   new topology, data will be downloaded from server.
 * peer is considered as stable if it can be added to other peer's topology.
 * m3u8 is small, it will be downloaded only from one peer.
+
+Server part:
+  * P2P need a server to support rtmfp. we use https://github.com/OpenRTMFP/Cumulus.
+    Cumulus support lua, we can add peer id to redis using lua script.
+  * we also use redis to store peer ids.
+  * a nodejs http service for peer to find other peers' id.

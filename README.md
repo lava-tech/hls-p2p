@@ -25,3 +25,26 @@ Server part:
     Cumulus support lua, we can add peer id to redis using lua script.
   * we also use redis to store peer ids.
   * a nodejs http service for peer to find other peers' id.
+
+Client part:
+  * we implement a `P2PLoader`, which will replace the original `HTTPStreamDownloader` in osmf-hls-plugin
+
+# Install
+  * our test server is CentOS 6.2, you can `bash install/install_p2p.sh` the install required server software.
+  * The IDE we used to develope our flash code is 'FlashDevelop'
+
+
+# Run and test
+Server:
+  * start redis
+  * copy "cumulus/main.lua" to "Cumulus/CumulusServer/www" and start CumulusServer
+  * copy "server/remote_log" to any folder, under remote_log, run `npm install`, then `node index.js`
+  * you also need a media server to stream HLS.
+
+Client:
+  * Change config in bin/index.html
+  ```
+  change the ip of your server in bin/index.html, such as "115.29.205.140"
+  ```
+  
+  * open multiply browser tab for `bin/index.html`

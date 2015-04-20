@@ -30,7 +30,7 @@ Client part:
   * we implement a `P2PLoader`, which will replace the original `HTTPStreamDownloader` in osmf-hls-plugin
 
 # Install
-  * our test server is CentOS 6.2, you can `bash install/install_p2p.sh` the install required server software.
+  * our test server is CentOS 6.2, you can `bash install/install_p2p.sh` to install required server software.
   * The IDE we used to develope our flash code is 'FlashDevelop'
 
 

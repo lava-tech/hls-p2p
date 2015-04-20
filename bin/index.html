@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>osmf-p2p-plugin Ver0.4.6</title>
+	<meta name="description" content="" />
+	
+	<script src="js/swfobject.js"></script>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script>
+    function log(v){
+        console.log(v);
+    }
+    
+    var peer_id = null;
+    var app_id = null;
+    function set_app_peer_id(app, id){
+        app_id = app;
+        peer_id = id;
+
+	$("#peer_id").html(peer_id.substring(0,7));
+        
+        $.get( "http://115.29.205.140:5000/get_total_count?resourceID="+app_id, function( data ) {
+            $("#num").html(data);
+        });
+    }
+    
+    function set_p2p_info(info){
+        if(info['type'] == 'source_change')
+        {
+            $('#from').html(info['data']);
+        }
+        else if(info['type'] == 'upstream_peers')
+        {
+            var h = "";
+            for(var i = 0; i < info['data'].length; i++)
+            {
+                h += "<p>" + info['data'][i].substring(0, 7) + "</p>";
+            }
+
+            $('#up').html(h);
+        }
+        else if(info['type'] == 'downstream_peers')
+        {
+            var h = "";
+            for(var i = 0; i < info['data'].length; i++)
+            {
+                h += "<p>" + info['data'][i].substring(0, 7) + "</p>";
+            }
+
+            $('#dp').html(h);
+        }
+        else if(info['type'] == 'downstream_speed')
+        {
+            $('#cds').html(info['data']['current']);
+            $('#ads').html(info['data']['avarage']);
+        }
+        else if(info['type'] == 'peer_statistics'){
+            var h = "";
+            for(var i in info['data']){
+                var d = info['data'][i];
+                h += "<p id='" + d["id"] + "'>" + d["id"].substring(0, 7) 
+                    + " inBytes: " + d["inBytes"] + "B" + ", inAvarageSpeed: " + d["inAvarageSpeed"].toFixed(2) + "KB/s"
+                    + " outBytes: " + d["outBytes"] + "B" + ", outAvarageSpeed: " + d["outAvarageSpeed"].toFixed(2) + "KB/s"
+                    + "</p>";
+            }
+            
+            $('#st').html(h);
+        }
+    }
+    
+    var peer_disconnect_url = "http://115.29.205.140:5000/peer_disconnect";
+    
+    window.onunload = function(){
+        if(peer_id){
+            jQuery.ajax({url: peer_disconnect_url,
+                         type: "POST",
+                         data: { peer_id : peer_id,
+                                 app: app_id
+                         },
+                         async:false});
+        }
+    };
+        
+    </script>
+	<script>
+		var flashvars = {
+            m3u8_url: "http://211.103.128.226:8080/live/tvie/xray/pad.m3u8",
+            rtmfp_url: "rtmfp://115.29.205.140:19350/app",
+            http_tracker: "http://115.29.205.140:5000/get_peers",
+            remote_log_base_url: "http://115.29.205.140:5000/remote_log",
+            rtmfp_url_peers: 2,
+            index_rtmfp_url: "",
+            index_rtmfp_url_peers: 1,
+            source_servers: ["211.103.128.226:8080"]
+		};
+		var params = {
+			menu: "false",
+			scale: "noScale",
+			allowFullscreen: "true",
+			allowScriptAccess: "always",
+			bgcolor: "",
+			wmode: "direct" // can cause issues with FP settings & webcam
+		};
+		var attributes = {
+			id:"osmfp2pplugin"
+		};
+		swfobject.embedSWF(
+			"osmfp2pplugin.swf?v=0.4.8", 
+			"altContent", "100%", "100%", "11.3.0", 
+			"expressInstall.swf", 
+			flashvars, params, attributes);
+            
+	</script>
+	<style>
+		html, body {overflow: auto;}
+		body { margin:0; }
+	        #x {background-image: url("x.jpg"); background-size:cover; width: 1024px; height: 476px; -webkit-filter: blur(200px); -moz-filter: blur(200px);
+		    margin-left:auto; margin-right: auto;
+		}
+		#ct {margin-left:auto; margin-right: auto; width: 600px; height: 400px; margin-top: 100px; border: solid 1px #444;}
+		#y {position: relative; top: -476px; left: 0; width: 100%; text-shadow: 1px 1px 1px #111}
+		.sp {font-weight: bold; color: #fa4}
+                .xx {margin-left:auto; margin-right:auto; width: 600px;}
+	</style>
+</head>
+<body>
+	<div id='x'>
+	</div>
+	<div id='y'>
+    <div id="ct">
+	<div id="altContent">
+		<h1>osmf-p2p-plugin</h1>
+		<p><a href="http://www.adobe.com/go/getflashplayer">Get Adobe Flash player</a></p>
+	</div>
+	</div>
+	<div class='xx'>
+          <p class='sp'>peer_id: <span id='peer_id'>N/A</span></p>
+          <p class='sp'>当前Peer数: <span id="num">N/A</span>,     来源: <span id="from">N/A</span></p>
+	  <div>
+          <p class='sp'>downstream peers(这些peer会从我们这取数据): </p>
+          <p id='dp' class='sp'></p>
+      </div>
+	  <div>
+          <p class='sp'>upstream peers(我们从这些peer那得到数据): </p>
+          <p id='up' class='sp'></p>
+          </div>
+          <p class='sp'>当前downstream速度: <span id='cds'>0KB/s</span>, 平均downstream速度: <span id='ads'>0KB/s</span></p>
+       
+       <div>
+           <p class="sp">统计信息:</p>
+           <p id="st" class="sp"></p>
+       </div>   
+       </div>
+	</div>
+</body>
+</html>

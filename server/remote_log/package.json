@@ -1,0 +1,11 @@
+{
+    "name": "remotelog",
+        "version": "0.1.0",
+        "dependencies": {
+            "body-parser": "1.0.x",
+            "express": "4.1.x",
+            "hiredis": "0.1.x",
+            "redis": "0.10.x",
+            "morgan": "1.0.x"
+        }
+}

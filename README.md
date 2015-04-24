@@ -49,6 +49,26 @@ Client:
   ```
   change the ip of your server in bin/index.html, such as "115.29.205.140"
   ```
+  some config value and their meanings are as follows:
+  ```
+            # the url of LIVE hls stream, it MUST be live and single stream
+            m3u8_url: "http://211.103.128.226:8080/live/tvie/xray/pad.m3u8",
+            # the rtmfp url
+            rtmfp_url: "rtmfp://115.29.205.140:19350/app",
+            # the url we will get peers information
+            http_tracker: "http://115.29.205.140:5000/get_peers",
+            # send log to that url
+            remote_log_base_url: "http://115.29.205.140:5000/remote_log",
+            # how many peers we will use to download data
+            rtmfp_url_peers: 2,
+            # leave it as it is
+            index_rtmfp_url: "",
+            # leave it as it is
+            index_rtmfp_url_peers: 1,
+            # the server ip and port from where we download m3u8 and ts.
+            # if you do not know how it works, set it as the same as `m3u8_url`
+            source_servers: ["211.103.128.226:8080"]
+  ```
  
   * put bin/* under a web server(such as nginx).
   * visit `bin/index.html` in your browser

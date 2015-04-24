@@ -73,3 +73,25 @@ Client:
  
   * put bin/* under a web server(such as nginx).
   * visit `bin/index.html` in your browser
+
+# Data
+In Cumulus, we will add peer informations to redis.
+You can get the peer informations in redis with following command
+
+* List all p2p instance.
+```
+127.0.0.1:6379 > SMEMBERS cumulus_app
+```
+
+* For one p2p instance, get all connected peers' id. for example: if I want to get peers of a p2p instance called "app"
+```
+127.0.0.1:6379> LLEN app
+(integer) 1
+127.0.0.1:6379> LRANGE app 0 1
+1) "c39e1de52e704279ecb6800bdb4c20006059d6b600b8abd08941a4119dc4250b"
+```
+
+* For some debug reason, if you want to clear all peers of a p2p instance called "app", you can do
+```
+127.0.0.1:6379> LTRIM app 0 0
+```

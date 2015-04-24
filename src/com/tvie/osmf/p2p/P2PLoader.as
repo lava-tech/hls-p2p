@@ -36,6 +36,7 @@ package com.tvie.osmf.p2p
     import flash.utils.setTimeout;
     import flash.utils.Timer;
     import org.denivip.osmf.utility.Url;
+    import org.osmf.net.httpstreaming.HTTPStreamDownloader;
     
 	/**
      * ...
@@ -387,7 +388,10 @@ package com.tvie.osmf.p2p
         /* Start of Loader functions */
         override public function get isOpen():Boolean
 		{
-			if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.isOpen;
+            }
+			else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.isOpen;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -399,7 +403,10 @@ package com.tvie.osmf.p2p
         
         override public function get isComplete():Boolean
 		{
-			if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.isComplete;
+            }
+			else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.isComplete;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -411,7 +418,10 @@ package com.tvie.osmf.p2p
         
         override public function get hasData():Boolean
 		{
-			if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.hasData;
+            }
+			else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.hasData;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -423,7 +433,10 @@ package com.tvie.osmf.p2p
         
         override public function get hasErrors():Boolean
 		{
-			if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.hasErrors;
+            }
+			else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.hasErrors;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -435,7 +448,10 @@ package com.tvie.osmf.p2p
         
         override public function get downloadDuration():Number
 		{
-			if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.downloadDuration;
+            }
+			else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.downloadDuration;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -446,7 +462,7 @@ package com.tvie.osmf.p2p
 		}
         
         override public function canGetIdx():Boolean {
-            if (getFromHttpServer_ || chunkCache_.isIdxTooOld()) {
+            if (fastStartActive_ || getFromHttpServer_ || chunkCache_.isIdxTooOld()) {
                 return false;
             }
             
@@ -468,7 +484,10 @@ package com.tvie.osmf.p2p
         
         override public function get downloadBytesCount():Number
 		{
-			if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.downloadBytesCount;
+            }
+			else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.downloadBytesCount;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -479,7 +498,10 @@ package com.tvie.osmf.p2p
 		}
         
         override public function get totalAvailableBytes():int {
-            if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.totalAvailableBytes;
+            }
+            else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.totalAvailableBytes;
             }
             else if (lastFrom_ == FROM_P2P) {
@@ -490,7 +512,10 @@ package com.tvie.osmf.p2p
         }
         
         override public function getBytes(numBytes:int = 0):IDataInput {
-            if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.getBytes(numBytes);
+            }
+            else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 var bytes:IDataInput = contentServer_.getBytes(numBytes);
                 return bytes;
             }
@@ -502,7 +527,10 @@ package com.tvie.osmf.p2p
         }
         
         override public function clearSavedBytes():void {
-            if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.clearSavedBytes();
+            }
+            else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.clearSavedBytes();
             }
             else if (lastFrom_ == FROM_P2P){
@@ -511,7 +539,10 @@ package com.tvie.osmf.p2p
         }
         
         override public function appendToSavedBytes(source:IDataInput, count:uint):void {
-            if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.appendToSavedBytes(source, count);
+            }
+            else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.appendToSavedBytes(source, count);
             }
             else if (lastFrom_ == FROM_P2P){
@@ -520,7 +551,10 @@ package com.tvie.osmf.p2p
         }
         
         override public function saveRemainingBytes():void {
-            if (lastFrom_ == FROM_CONTENT_SERVER) {
+            if (fastStartActive_) {
+                return fastStartDownloader_.saveRemainingBytes();
+            }
+            else if (lastFrom_ == FROM_CONTENT_SERVER) {
                 return contentServer_.saveRemainingBytes();
             }
             else if (lastFrom_ == FROM_P2P){
@@ -538,6 +572,21 @@ package com.tvie.osmf.p2p
         
         override public function open(request:Object, dispatcher:IEventDispatcher, timeout:Number):void
         {
+            if (fastStartActive_ && fastStartCount_ >= FAST_START_MAX_COUNT) {
+                fastStartActive_ = false;
+                if (fastStartDownloader_ != null) {
+                    fastStartDownloader_.close(true);
+                    fastStartDownloader_ = null;
+                }
+            }
+            
+            if (fastStartActive_) {
+                close();
+                fastStartDownloader_.open(request as URLRequest, dispatcher, timeout);
+                fastStartCount_++;
+                return;
+            }
+            
             lastReq_ = request as URLRequest;
             //RemoteLogger.log(logPrefix + "open " + lastReq_.url);
             
@@ -563,6 +612,9 @@ package com.tvie.osmf.p2p
         }
         
         override public function close(dispose:Boolean = false):void {
+            if (fastStartActive_) {
+                fastStartDownloader_.close(dispose);
+            }
             if (lastFrom_ == FROM_CONTENT_SERVER) {
                 contentServer_.close(dispose);
             }
@@ -686,6 +738,13 @@ package com.tvie.osmf.p2p
         
         private var additionalInfo_:Object;
         private var isIdxReady_:Boolean = true;
+        
+        // If we need to connect more than 10 peers at the start, it may spend 10+ seconds,
+        // So we download the FAST_START_MAX_COUNT ts file from Server directly.
+        private var fastStartDownloader_:HTTPStreamDownloader = new HTTPStreamDownloader();
+        private var fastStartCount_:int = 0;
+        private var fastStartActive_:Boolean = true;
+        private static const FAST_START_MAX_COUNT:int = 1;
     }
 
 }

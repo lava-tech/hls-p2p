@@ -11,6 +11,10 @@
     function log(v){
         console.log(v);
     }
+    ip = "10.33.0.81";
+    rtmfp_port = "19350";
+    remote_log_port = "5000";
+    media_server_port = "40770";
     
     var peer_id = null;
     var app_id = null;
@@ -20,7 +24,7 @@
 
 	$("#peer_id").html(peer_id.substring(0,7));
         
-        $.get( "http://115.29.205.140:5000/get_total_count?resourceID="+app_id, function( data ) {
+        $.get( "http://" + ip + ":" + remote_log_port + "/get_total_count?resourceID="+app_id, function( data ) {
             $("#num").html(data);
         });
     }
@@ -69,7 +73,7 @@
         }
     }
     
-    var peer_disconnect_url = "http://115.29.205.140:5000/peer_disconnect";
+    var peer_disconnect_url = "http://" + ip + ":" + remote_log_port + "/peer_disconnect";
     
     window.onunload = function(){
         if(peer_id){
@@ -85,14 +89,14 @@
     </script>
 	<script>
 		var flashvars = {
-            m3u8_url: "http://211.103.128.226:8080/live/tvie/xray/pad.m3u8",
-            rtmfp_url: "rtmfp://115.29.205.140:19350/app",
-            http_tracker: "http://115.29.205.140:5000/get_peers",
-            remote_log_base_url: "http://115.29.205.140:5000/remote_log",
+            m3u8_url: "http://" + ip + ":" + media_server_port + "/live/tvie/xray/pad.m3u8",
+            rtmfp_url: "rtmfp://" + ip + ":" + rtmfp_port + "/app",
+            http_tracker: "http://" + ip + ":" + remote_log_port + "/get_peers",
+            remote_log_base_url: "http://" + ip + ":" + remote_log_port + "/remote_log",
             rtmfp_url_peers: 2,
             index_rtmfp_url: "",
             index_rtmfp_url_peers: 1,
-            source_servers: ["211.103.128.226:8080"]
+            source_servers: [ip + ":" + media_server_port]
 		};
 		var params = {
 			menu: "false",

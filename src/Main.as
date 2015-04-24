@@ -167,14 +167,14 @@ package
             
             if (!startParams.hasOwnProperty("m3u8_url")) {
                 startParams = new Object();
-                startParams["m3u8_url"] = "http://211.103.128.226:8080/live/tvie/xray/pad.m3u8";
-                startParams["rtmfp_url"] = "rtmfp://115.29.205.140:19350/app";
-                startParams["http_tracker"] = "http://115.29.205.140:5000/get_peers";
-                startParams["remote_log_base_url"] = "http://115.29.205.140:5000/remote_log";
+                startParams["m3u8_url"] = "http://10.33.0.81:40770/live/tt/ttx.m3u8";
+                startParams["rtmfp_url"] = "rtmfp://10.33.0.81:19350/app";
+                startParams["http_tracker"] = "http://10.33.0.81:5000/get_peers";
+                startParams["remote_log_base_url"] = "http://10.33.0.81:5000/remote_log";
                 startParams["rtmfp_url_peers"] = "2";
                 startParams["index_rtmfp_url"] = "";
                 startParams["index_rtmfp_url_peers"] = "1";
-                startParams["source_servers"] = ["211.103.128.226:8080"]
+                startParams["source_servers"] = ["10.33.0.81:40770"]
             }
             
             var url2:String = "http://10.33.0.81:10099/live/tvie/mytest2/mxx.m3u8";

@@ -2,6 +2,8 @@
 Flash OSMF based hybrid cdn&amp;p2p hls solution. Currently it support LIVE hls. 
 Flash support rtmfp protocal, we use that to deliver video&audio data in p2p&cdn hybrid way.
 
+NOTE: Please take some time to READ this file.
+
 # how it works
 We use https://github.com/denivip/osmf-hls-plugin to enable hls support. Use that as a base, we developed the p2p part.
 
@@ -37,7 +39,8 @@ Client part:
 # Run and test
 Server:
   * start redis
-  * copy "cumulus/main.lua" to "Cumulus/CumulusServer/www" and start CumulusServer
+  * copy "cumulus/main.lua" to "Cumulus/CumulusServer/www" folder and start CumulusServer.
+    For how to set config for CumulusServer, refer to https://github.com/OpenRTMFP/Cumulus/wiki/Installation#configurations
   * copy "server/remote_log" to any folder, under remote_log, run `npm install`, then `node index.js`
   * you also need a media server to stream HLS(such as FMS, Wowza, or Lava Media Server 4(trochilus) if you interested).
     note: Lava Media Server 4 is not a open source project now.

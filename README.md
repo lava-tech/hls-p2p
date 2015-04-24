@@ -35,7 +35,6 @@ Client part:
   * our test server is CentOS 6.2, you can `bash install/install_p2p.sh` to install required server software.
   * The IDE we used to develope our flash code is 'FlashDevelop'
 
-
 # Run and test
 Server:
   * start redis
@@ -98,3 +97,20 @@ You can get the peer informations in redis with following command
 ```
 127.0.0.1:6379> LTRIM app 0 0
 ```
+
+# peer - server protocal
+* Flash client connect Cumulus using RTMFP protocal. Flash client will get a `peerID`(a unique id), and in `main.lua`,
+  we save client `peerID` to redis.
+* Flash client send http request to `remote_log` service to find other peer ids, so that it can connect other peer.
+* If user close the `index.html` page, the page will send `disconnect` event to `remote_log`, `remote_log` will remove that
+  peer's id from redis.(We need to do this because Flash in chrome will not send disconnect event to Cumulus server)
+
+# peers protocal
+* First, we need to create two way session between two peer, from each side it can send msg. We call it "Create Session"
+* We call one ts file as CHUNK. A CHUNK may contain more than one PIECE. We download one PIECE of CHUNK from different peer.
+* After we have connect ENOUGH peers, we send them HAS_CHUNK_REQ(ts_url) msg to query if we can download PIECE from them.
+* After enough peers send back us 'HAS_CHUNK_RESP(yes)', We send 'GET_PIECE_REQ(url, piece_id)' to qualified peers.
+* After we got some data of a CHUNK, we feed it to player.
+* If we do not get the CHUNK at required time, we will query if the peer still alive, if not, we call it "P2P Failed".
+* If we are in "P2P Failed", we will shift from "P2P mode" to "CDN mode".
+* If we are in "CDN mode", we will try to shift to "P2P mode" at intervals

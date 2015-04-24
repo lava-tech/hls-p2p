@@ -52,6 +52,7 @@ Client:
   some config value and their meanings are as follows:
   ```
   # the url of LIVE hls stream, it MUST be live and single stream
+  # it should only contain ts file, and MUST NOT contain another m3u8 file
   m3u8_url: "http://211.103.128.226:8080/live/tvie/xray/pad.m3u8",
   # the rtmfp url
   rtmfp_url: "rtmfp://115.29.205.140:19350/app",

@@ -11,6 +11,10 @@ app.use(bodyParser());
 
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/public'));
+app.use(function(req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    return next();
+});
 
 app.post('/remote_log', function(req, res){
    var data = req.body.log;

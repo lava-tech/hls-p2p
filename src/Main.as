@@ -207,7 +207,7 @@ package
             player = new MediaPlayer();
             player.media = ele;
             player.autoPlay = true;
-            player.volume = 0;
+            player.volume = parseFloat(startParams["volume"]);
             container = new MediaContainer();
             container.addMediaElement(ele);
             
